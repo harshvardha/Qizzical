@@ -1,55 +1,66 @@
 import Question from "./Question"
+import { nanoid } from "nanoid"
+import { useState, useEffect } from "react"
 
 const Quiz = () => {
-    const quiz = [
-        {
-            question: "How would one say goodbye in Spanish?",
-            answers: {
-                option1: "adios",
-                option2: "hola",
-                option3: "au revoir",
-                option4: "salir"
-            },
-        },
-        {
-            question: "Which best selling toy of 1983 caused hysteria, resulting in riots breaking in stores?",
-            answers: {
-                option1: "cabbage patch kids",
-                option2: "transformers",
-                option3: "care bears",
-                option4: "rubik's cube"
-            }
-        },
-        {
-            question: "What is the hottest planet in our Solar System?",
-            answers: {
-                option1: "mercury",
-                option2: "venus",
-                option3: "mars",
-                option4: "saturn"
-            }
-        },
-        {
-            question: "In which country was the caesar salad invented?",
-            answers: {
-                option1: "italy",
-                option2: "portugal",
-                option3: "mexico",
-                option4: "france"
-            }
-        },
-        {
-            question: "How Many Hearts Does An Octopus Have?",
-            answers: {
-                option1: "one",
-                option2: "two",
-                option3: "three",
-                option4: "four"
+    const [quizQuestions, setQuizQuestions] = useState([])
+    const [answerSelected, setAnswerSelected] = useState({ 1: "", 2: "", 3: "", 4: "", 5: "" })
+    const [playAgain, setPlayAgain] = useState(false)
+    let score = 0
+
+    function handleAnswerSelected(id, answer) {
+        setAnswerSelected(prevSelected => {
+            const newState = { ...prevSelected }
+            newState[id] = answer
+            return newState
+        })
+    }
+
+    function checkAnswers() {
+        console.log(answerSelected)
+        for (let i = 1; i <= 5; i++) {
+            if (answerSelected[i] === quizQuestions[i - 1].correct_answer) {
+                score++
             }
         }
-    ]
+        console.log(score)
+        setPlayAgain(prevState => !prevState)
+    }
 
-    const questions = quiz.map(question => <Question quiz={question} />)
+    function restart() {
+        setPlayAgain(prevState => !prevState)
+        console.log("game restarted")
+    }
+
+    useEffect(() => async () => {
+        const data = await fetch("https://opentdb.com/api.php?amount=5&type=multiple")
+        const res = await data.json()
+        let quesNo = 0
+        const quizQuestions = res.results.map(ques => {
+            const ans = [...ques.incorrect_answers]
+            const randomIndex = Math.floor(Math.random() * 4)
+            quesNo++
+            ans.splice(randomIndex, 0, ques.correct_answer)
+            return {
+                id: nanoid(),
+                questionNo: quesNo,
+                question: ques.question,
+                answers: ans,
+                correct_answer: ques.correct_answer
+            }
+        })
+        console.log(quizQuestions)
+        setQuizQuestions(quizQuestions)
+    }, [])
+
+    const questions = quizQuestions.map(ques => <Question
+        key={ques.id}
+        questionNo={ques.questionNo}
+        question={ques.question}
+        answers={ques.answers}
+        handleAnswerSelected={handleAnswerSelected}
+    />)
+    console.log(score)
 
     return (
         <div className="quiz">
@@ -58,7 +69,8 @@ const Quiz = () => {
             <div className="quiz--question--container">
                 {questions}
             </div>
-            <button type="button" className="quiz--check--answers--button">Check Answers</button>
+            {playAgain && <p className="quiz--score">You scored {score}/5 correct answers</p>}
+            <button type="button" className="quiz--check--answers--button" style={{ marginLeft: !playAgain ? "700px" : "20px" }} onClick={!playAgain ? checkAnswers : restart}>{playAgain ? "Play Again" : "Check Answers"}</button>
         </div>
     )
 }

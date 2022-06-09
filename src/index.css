@@ -89,13 +89,19 @@ body {
   border: 0px;
   border-radius: 10px;
   padding: 13px;
-  margin-left: 700px;
-  margin-top: 50px;
+  margin-top: 10px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .quiz--check--answers--button:active {
   box-shadow: inset 5px 5px 10px -3px rgba(0, 0, 0, 0.7);
+}
+
+.quiz--score {
+  display: inline;
+  margin-left: 600px;
+  font-size: 17px;
+  font-weight: 700;
 }
 
 .question {

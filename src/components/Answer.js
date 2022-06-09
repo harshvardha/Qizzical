@@ -1,10 +1,13 @@
-const Answer = ({ answer, isSelected, handleIsSelected }) => {
+const Answer = ({ answer, answerNo, questionNo, isSelected, handleAnswerSelected, handleOptionSelected }) => {
     const style = {
         backgroundColor: isSelected ? "#D6DBF5" : "#F5F7FB",
         border: isSelected ? "0px" : "1px solid #4D5B9E"
     }
     return (
-        <div className="answer" style={style} onClick={() => handleIsSelected()}>
+        <div className="answer" style={style} onClick={() => {
+            handleAnswerSelected(questionNo, answer)
+            handleOptionSelected(answerNo)
+        }}>
             <p className="answer--option">{answer}</p>
         </div>
     )

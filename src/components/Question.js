@@ -1,23 +1,53 @@
 import Answer from "./Answer"
+import { nanoid } from "nanoid"
 import { useState } from "react"
 
-const Question = ({ quiz }) => {
-    const [option1Selected, setOption1Selected] = useState(false)
-    const [option2Selected, setOption2Selected] = useState(false)
-    const [option3Selected, setOption3Selected] = useState(false)
-    const [option4Selected, setOption4Selected] = useState(false)
+const Question = ({ questionNo, question, answers, handleAnswerSelected }) => {
+    const [optionSelected, setOptionSelected] = useState(initializeOptionState())
+    let id = 0
 
-    function handleIsSelected() {
-
+    function initializeOptionState() {
+        const state = {}
+        for (let i = 1; i <= answers.length; i++) {
+            state[i] = false
+        }
+        return state
     }
+
+    function handleOptionSelected(id) {
+        setOptionSelected(prevState => {
+            if (prevState[id]) {
+                prevState[id] = false
+            }
+            else {
+                prevState[id] = true
+                for (let i = 1; i <= answers.length; i++) {
+                    if (i !== id) {
+                        prevState[i] = false
+                    }
+                }
+            }
+            return prevState
+        })
+    }
+
+    const ans = answers.map(answer => {
+        id++
+        return <Answer
+            answer={answer}
+            answerNo={id}
+            questionNo={questionNo}
+            isSelected={optionSelected[id]}
+            handleAnswerSelected={handleAnswerSelected}
+            handleOptionSelected={handleOptionSelected}
+        />
+    })
+
     return (
         <div className="question">
-            <p className="question--question">{quiz.question}</p>
+            <p className="question--question">{question}</p>
             <div className="question--answers">
-                <Answer answer={quiz.answers.option1} isSelected={option1Selected} handleIsSelected={handleIsSelected} />
-                <Answer answer={quiz.answers.option2} isSelected={option2Selected} handleIsSelected={handleIsSelected} />
-                <Answer answer={quiz.answers.option3} isSelected={option3Selected} handleIsSelected={handleIsSelected} />
-                <Answer answer={quiz.answers.option4} isSelected={option4Selected} handleIsSelected={handleIsSelected} />
+                {ans}
             </div>
             <hr className="question--rule" />
         </div>
