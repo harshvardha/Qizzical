@@ -1,7 +1,7 @@
 import Answer from "./Answer"
 import { useState } from "react"
 
-const Question = ({ questionNo, question, answers, handleAnswerSelected }) => {
+const Question = ({ questionNo, question, answers, correctAnswer, playAgain, handleAnswerSelected }) => {
     const [optionSelected, setOptionSelected] = useState(initializeOptionState())
 
     function initializeOptionState() {
@@ -33,6 +33,8 @@ const Question = ({ questionNo, question, answers, handleAnswerSelected }) => {
         return <Answer
             key={answer}
             answer={answer}
+            isCorrectAnswer={answer === correctAnswer ? true : false}
+            playAgain={playAgain}
             questionNo={questionNo}
             isSelected={optionSelected[answer]}
             handleAnswerSelected={handleAnswerSelected}

@@ -64,6 +64,8 @@ const Quiz = () => {
         questionNo={ques.questionNo}
         question={ques.question}
         answers={ques.answers}
+        correctAnswer={ques.correct_answer}
+        playAgain={playAgain}
         handleAnswerSelected={handleAnswerSelected}
     />)
 
