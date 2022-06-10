@@ -1,15 +1,13 @@
 import Answer from "./Answer"
-import { nanoid } from "nanoid"
 import { useState } from "react"
 
 const Question = ({ questionNo, question, answers, handleAnswerSelected }) => {
     const [optionSelected, setOptionSelected] = useState(initializeOptionState())
-    let id = 0
 
     function initializeOptionState() {
         const state = {}
-        for (let i = 1; i <= answers.length; i++) {
-            state[i] = false
+        for (let i = 0; i < answers.length; i++) {
+            state[answers[i]] = false
         }
         return state
     }
@@ -21,9 +19,9 @@ const Question = ({ questionNo, question, answers, handleAnswerSelected }) => {
             }
             else {
                 prevState[id] = true
-                for (let i = 1; i <= answers.length; i++) {
-                    if (i !== id) {
-                        prevState[i] = false
+                for (let i = 0; i < answers.length; i++) {
+                    if (answers[i] !== id) {
+                        prevState[answers[i]] = false
                     }
                 }
             }
@@ -32,12 +30,11 @@ const Question = ({ questionNo, question, answers, handleAnswerSelected }) => {
     }
 
     const ans = answers.map(answer => {
-        id++
         return <Answer
+            key={answer}
             answer={answer}
-            answerNo={id}
             questionNo={questionNo}
-            isSelected={optionSelected[id]}
+            isSelected={optionSelected[answer]}
             handleAnswerSelected={handleAnswerSelected}
             handleOptionSelected={handleOptionSelected}
         />

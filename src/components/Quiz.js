@@ -6,7 +6,8 @@ const Quiz = () => {
     const [quizQuestions, setQuizQuestions] = useState([])
     const [answerSelected, setAnswerSelected] = useState({ 1: "", 2: "", 3: "", 4: "", 5: "" })
     const [playAgain, setPlayAgain] = useState(false)
-    let score = 0
+    const [score, setScore] = useState(0)
+    const [fetchQuestions, setFetchQuestions] = useState(true)
 
     function handleAnswerSelected(id, answer) {
         setAnswerSelected(prevSelected => {
@@ -17,41 +18,46 @@ const Quiz = () => {
     }
 
     function checkAnswers() {
-        console.log(answerSelected)
         for (let i = 1; i <= 5; i++) {
             if (answerSelected[i] === quizQuestions[i - 1].correct_answer) {
-                score++
+                setScore(prevScore => prevScore + 1)
             }
         }
-        console.log(score)
         setPlayAgain(prevState => !prevState)
     }
 
     function restart() {
         setPlayAgain(prevState => !prevState)
-        console.log("game restarted")
+        setFetchQuestions(prevState => !prevState)
+        setScore(0)
     }
 
     useEffect(() => async () => {
-        const data = await fetch("https://opentdb.com/api.php?amount=5&type=multiple")
-        const res = await data.json()
-        let quesNo = 0
-        const quizQuestions = res.results.map(ques => {
-            const ans = [...ques.incorrect_answers]
-            const randomIndex = Math.floor(Math.random() * 4)
-            quesNo++
-            ans.splice(randomIndex, 0, ques.correct_answer)
-            return {
-                id: nanoid(),
-                questionNo: quesNo,
-                question: ques.question,
-                answers: ans,
-                correct_answer: ques.correct_answer
-            }
-        })
-        console.log(quizQuestions)
-        setQuizQuestions(quizQuestions)
-    }, [])
+        try {
+            const data = await fetch("https://opentdb.com/api.php?amount=5&type=multiple")
+            const res = await data.json()
+            let quesNo = 0
+            console.log(res)
+            const quizQuestions = res.results.map(ques => {
+                const ans = [...ques.incorrect_answers]
+                const randomIndex = Math.floor(Math.random() * 4)
+                quesNo++
+                ans.splice(randomIndex, 0, ques.correct_answer)
+                return {
+                    id: nanoid(),
+                    questionNo: quesNo,
+                    question: ques.question,
+                    answers: ans,
+                    correct_answer: ques.correct_answer
+                }
+            })
+            console.log(quizQuestions)
+            setQuizQuestions(quizQuestions)
+        }
+        catch (error) {
+            setFetchQuestions(prevState => !prevState)
+        }
+    }, [fetchQuestions])
 
     const questions = quizQuestions.map(ques => <Question
         key={ques.id}
@@ -60,7 +66,6 @@ const Quiz = () => {
         answers={ques.answers}
         handleAnswerSelected={handleAnswerSelected}
     />)
-    console.log(score)
 
     return (
         <div className="quiz">
