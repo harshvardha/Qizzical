@@ -3,7 +3,7 @@ import Quiz from "./components/Quiz";
 import { useState } from "react"
 
 function App() {
-  const [started, setStarted] = useState(true)
+  const [started, setStarted] = useState(false)
 
   function handleStarted() {
     setStarted(prevState => !prevState)
